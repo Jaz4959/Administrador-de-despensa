@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Despensa</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose-deep: #c2185b;
+    --rose-mid: #e91e8c;
+    --rose-light: #f48fb1;
+    --rose-pale: #fce4ec;
+    --rose-blush: #fdf0f5;
+    --rose-accent: #ff4081;
+    --cream: #fff8f9;
+    --text-dark: #3d1a28;
+    --text-mid: #6d3050;
+    --text-light: #b06080;
+    --danger: #e53935;
+    --warning: #f57c00;
+    --ok: #2e7d32;
+    --shadow: 0 4px 24px rgba(194,24,91,0.12);
+    --shadow-hover: 0 8px 36px rgba(194,24,91,0.22);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--rose-blush);
+    color: var(--text-dark);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 10% 20%, rgba(244,143,177,0.18) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(233,30,140,0.10) 0%, transparent 50%);
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #c2185b 0%, #e91e8c 60%, #f48fb1 100%);
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 24px rgba(194,24,91,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 20%;
+    width: 150px; height: 150px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .logo-icon {
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    color: white;
+    font-size: 2rem;
+    letter-spacing: 0.5px;
+  }
+  header h1 span {
+    font-style: italic;
+    font-weight: 400;
+  }
+  .header-date {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.9rem;
+    font-weight: 300;
+    text-align: right;
+  }
+  .header-date strong {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem 3rem;
+    background: white;
+    border-bottom: 2px solid var(--rose-pale);
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    flex: 1;
+    min-width: 140px;
+    background: var(--rose-pale);
+    border-radius: 14px;
+    padding: 1rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    border: 1.5px solid rgba(194,24,91,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .stat-icon { font-size: 1.6rem; }
+  .stat-info .num {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--rose-deep);
+    line-height: 1;
+  }
+  .stat-info .label {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* MAIN LAYOUT */
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 2rem 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; padding: 1rem; }
+    header, .stats-bar { padding: 1.5rem; }
+    .stats-bar { flex-wrap: wrap; }
+  }
+
+  /* PANELS */
+  .panel {
+    background: white;
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .panel:nth-child(2) { animation-delay: 0.1s; }
+  .panel:nth-child(3) { animation-delay: 0.15s; }
+  .panel:nth-child(4) { animation-delay: 0.2s; }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.4rem 1.8rem;
+    border-bottom: 2px solid var(--rose-pale);
+    background: linear-gradient(90deg, var(--rose-blush), white);
+  }
+  .panel-title {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--rose-deep);
+  }
+  .panel-title .icon { font-size: 1.3rem; }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--rose-deep), var(--rose-mid));
+    color: white;
+    box-shadow: 0 4px 14px rgba(194,24,91,0.35);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(194,24,91,0.45);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--rose-deep);
+    border: 2px solid var(--rose-light);
+  }
+  .btn-outline:hover {
+    background: var(--rose-pale);
+    border-color: var(--rose-deep);
+  }
+  .btn-danger {
+    background: linear-gradient(135deg, #e53935, #f06292);
+    color: white;
+    box-shadow: 0 3px 10px rgba(229,57,53,0.3);
+  }
+  .btn-danger:hover { transform: translateY(-1px); opacity: 0.9; }
+  .btn-sm {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.78rem;
+  }
+  .btn-icon {
+    background: var(--rose-pale);
+    color: var(--rose-deep);
+    border: none;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-icon:hover { background: var(--rose-light); color: white; }
+
+  /* FOOD ITEMS */
+  .item-list { padding: 0.5rem 0; }
+
+  .food-item {
+    display: flex;
+    align-items: center;
+    padding: 0.9rem 1.8rem;
+    gap: 1rem;
+    transition: background 0.2s;
+    border-bottom: 1px solid var(--rose-pale);
+    cursor: default;
+  }
+  .food-item:last-child { border-bottom: none; }
+  .food-item:hover { background: var(--rose-blush); }
+
+  .food-emoji { font-size: 1.6rem; min-width: 36px; text-align: center; }
+  .food-info { flex: 1; }
+  .food-name {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+  }
+  .food-category {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .food-expiry {
+    text-align: right;
+    min-width: 100px;
+  }
+  .expiry-date {
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+  .expiry-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .status-expired { color: var(--danger); }
+  .status-soon { color: var(--warning); }
+  .status-ok { color: var(--ok); }
+  .badge-expired { background: #ffebee; color: var(--danger); }
+  .badge-soon { background: #fff3e0; color: var(--warning); }
+  .badge-ok { background: #e8f5e9; color: var(--ok); }
+
+  .food-actions { display: flex; gap: 0.4rem; }
+
+  /* SHOPPING LIST */
+  .shopping-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.8rem;
+    gap: 1rem;
+    border-bottom: 1px solid var(--rose-pale);
+    transition: background 0.2s;
+  }
+  .shopping-item:last-child { border-bottom: none; }
+  .shopping-item:hover { background: var(--rose-blush); }
+  .shopping-item.checked { opacity: 0.5; }
+  .shopping-item.checked .shop-name { text-decoration: line-through; }
+
+  .custom-check {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 2.5px solid var(--rose-light);
+    background: white;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .custom-check.checked {
+    background: var(--rose-deep);
+    border-color: var(--rose-deep);
+    color: white;
+  }
+  .custom-check.checked::after { content: '✓'; font-size: 0.8rem; font-weight: 900; }
+
+  .shop-info { flex: 1; }
+  .shop-name { font-weight: 700; font-size: 0.92rem; color: var(--text-dark); }
+  .shop-qty { font-size: 0.78rem; color: var(--text-light); font-weight: 600; }
+  .shop-priority {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .priority-alta { background: #ffebee; color: #c62828; }
+  .priority-media { background: #fff3e0; color: #e65100; }
+  .priority-baja { background: #f3e5f5; color: #6a1b9a; }
+
+  /* ADD FORM */
+  .add-form {
+    padding: 1.4rem 1.8rem;
+    background: var(--rose-blush);
+    border-top: 2px solid var(--rose-pale);
+    display: none;
+  }
+  .add-form.open { display: block; animation: slideDown 0.2s ease; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+  .form-field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .form-field input, .form-field select {
+    width: 100%;
+    padding: 0.6rem 0.9rem;
+    border: 2px solid rgba(194,24,91,0.2);
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    background: white;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-field input:focus, .form-field select:focus {
+    border-color: var(--rose-deep);
+    box-shadow: 0 0 0 3px rgba(194,24,91,0.1);
+  }
+  .form-actions { display: flex; gap: 0.7rem; justify-content: flex-end; }
+
+  /* FULL-WIDTH PANEL */
+  .panel-full { grid-column: 1 / -1; }
+
+  /* TIPS */
+  .tip-section {
+    padding: 1.5rem 1.8rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .tip-card {
+    background: linear-gradient(135deg, var(--rose-pale), var(--rose-blush));
+    border-radius: 16px;
+    padding: 1.2rem;
+    border: 1.5px solid rgba(194,24,91,0.12);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .tip-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .tip-emoji { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .tip-title { font-weight: 700; color: var(--rose-deep); font-size: 0.9rem; margin-bottom: 0.3rem; }
+  .tip-text { font-size: 0.82rem; color: var(--text-light); line-height: 1.5; }
+
+  /* NOTIFICATION */
+  .notif {
+    position: fixed;
+    top: 1.5rem; right: 1.5rem;
+    background: linear-gradient(135deg, var(--rose-deep), var(--rose-mid));
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 8px 24px rgba(194,24,91,0.4);
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .notif.show { transform: translateX(0); }
+
+  /* CATEGORY FILTER */
+  .filter-row {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.8rem 1.8rem;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--rose-pale);
+  }
+  .filter-btn {
+    padding: 0.3rem 0.9rem;
+    border-radius: 20px;
+    border: 1.5px solid var(--rose-light);
+    background: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--rose-deep);
+    border-color: var(--rose-deep);
+    color: white;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-light);
+    font-size: 0.82rem;
+  }
+  footer span { color: var(--rose-mid); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div id="notif" class="notif">✓ <span id="notif-text">Guardado</span></div>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🌸</div>
+    <div>
+      <h1>Mi <span>Despensa</span></h1>
+      <div style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:300;">Gestión inteligente del hogar</div>
+    </div>
+  </div>
+  <div class="header-date">
+    <strong id="todayDate"></strong>
+    Hoy en tu hogar
+  </div>
+</header>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-card">
+    <div class="stat-icon">🥫</div>
+    <div class="stat-info">
+      <div class="num" id="totalItems">12</div>
+      <div class="label">Artículos totales</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">⚠️</div>
+    <div class="stat-info">
+      <div class="num" id="expiringItems" style="color:#f57c00">3</div>
+      <div class="label">Por caducar pronto</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">❌</div>
+    <div class="stat-info">
+      <div class="num" id="expiredItems" style="color:#e53935">2</div>
+      <div class="label">Caducados</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🛒</div>
+    <div class="stat-info">
+      <div class="num" id="shoppingCount">7</div>
+      <div class="label">Por comprar</div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- PANEL 1: DESPENSA -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <span class="icon">🏠</span> Inventario de Despensa
+      </div>
+      <button class="btn btn-primary" onclick="toggleForm('pantry-form')">+ Agregar</button>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterPantry(this,'all')">Todos</button>
+      <button class="filter-btn" onclick="filterPantry(this,'lacteos')">🥛 Lácteos</button>
+      <button class="filter-btn" onclick="filterPantry(this,'frutas')">🍎 Frutas</button>
+      <button class="filter-btn" onclick="filterPantry(this,'cereales')">🌾 Cereales</button>
+      <button class="filter-btn" onclick="filterPantry(this,'carnes')">🥩 Carnes</button>
+      <button class="filter-btn" onclick="filterPantry(this,'otros')">📦 Otros</button>
+    </div>
+
+    <div class="item-list" id="pantry-list"></div>
+
+    <div class="add-form" id="pantry-form">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Nombre del alimento</label>
+          <input type="text" id="p-name" placeholder="Ej: Leche entera">
+        </div>
+        <div class="form-field">
+          <label>Categoría</label>
+          <select id="p-cat">
+            <option value="lacteos">🥛 Lácteos</option>
+            <option value="frutas">🍎 Frutas</option>
+            <option value="cereales">🌾 Cereales</option>
+            <option value="carnes">🥩 Carnes</option>
+            <option value="otros">📦 Otros</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Cantidad</label>
+          <input type="text" id="p-qty" placeholder="Ej: 2 litros">
+        </div>
+        <div class="form-field">
+          <label>Fecha de caducidad</label>
+          <input type="date" id="p-date">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="toggleForm('pantry-form')">Cancelar</button>
+        <button class="btn btn-primary" onclick="addPantryItem()">💾 Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 2: LISTA DE COMPRAS -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <span class="icon">🛒</span> Lista de Compras
+      </div>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="btn btn-outline btn-sm" onclick="clearChecked()">Limpiar ✓</button>
+        <button class="btn btn-primary" onclick="toggleForm('shop-form')">+ Agregar</button>
+      </div>
+    </div>
+
+    <div class="item-list" id="shop-list"></div>
+
+    <div class="add-form" id="shop-form">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Producto</label>
+          <input type="text" id="s-name" placeholder="Ej: Aceite de oliva">
+        </div>
+        <div class="form-field">
+          <label>Cantidad estimada</label>
+          <input type="text" id="s-qty" placeholder="Ej: 1 botella">
+        </div>
+        <div class="form-field" style="grid-column:1/-1;">
+          <label>Prioridad</label>
+          <select id="s-prio">
+            <option value="alta">🔴 Alta — Urgente</option>
+            <option value="media">🟠 Media — Esta semana</option>
+            <option value="baja">🟣 Baja — Cuando sea</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="toggleForm('shop-form')">Cancelar</button>
+        <button class="btn btn-primary" onclick="addShopItem()">💾 Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 3: CONSEJOS -->
+  <div class="panel panel-full">
+    <div class="panel-header">
+      <div class="panel-title">
+        <span class="icon">💡</span> Consejos para tu Despensa
+      </div>
+    </div>
+    <div class="tip-section">
+      <div class="tip-card">
+        <div class="tip-emoji">🌡️</div>
+        <div class="tip-title">Temperatura adecuada</div>
+        <div class="tip-text">Mantén el refrigerador a 4°C o menos para prolongar la frescura de los alimentos y prevenir bacterias.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-emoji">📦</div>
+        <div class="tip-title">Método FIFO</div>
+        <div class="tip-text">Coloca los productos más nuevos detrás y usa primero los más antiguos. ¡Primero en entrar, primero en salir!</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-emoji">🥩</div>
+        <div class="tip-title">Carnes y proteínas</div>
+        <div class="tip-text">Congela las carnes si no las usarás en 2 días. Etiquétalas con fecha de congelación para mayor control.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-emoji">🍋</div>
+        <div class="tip-title">Frutas y verduras</div>
+        <div class="tip-text">Guarda las frutas y verduras por separado. Muchas frutas liberan etileno que acelera la maduración de otros alimentos.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-emoji">🔍</div>
+        <div class="tip-title">Revisión semanal</div>
+        <div class="tip-text">Revisa tu despensa cada domingo para planear los menús de la semana y actualizar tu lista de compras.</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Gestiona tu hogar con amor 🌸 <span>Mi Despensa</span> — Tu asistente doméstico
+</footer>
+
+<script>
+  // ── DATA ──────────────────────────────────────────
+  const today = new Date();
+
+  const emojis = { lacteos:'🥛', frutas:'🍎', cereales:'🌾', carnes:'🥩', otros:'📦' };
+  const catNames = { lacteos:'Lácteos', frutas:'Frutas y Verduras', cereales:'Cereales y Granos', carnes:'Carnes y Proteínas', otros:'Otros' };
+
+  let pantry = [
+    { id:1, name:'Leche entera',     cat:'lacteos',  qty:'2 litros',  date: daysFromNow(-3) },
+    { id:2, name:'Yogur griego',     cat:'lacteos',  qty:'4 piezas',  date: daysFromNow(2) },
+    { id:3, name:'Queso Oaxaca',     cat:'lacteos',  qty:'250 g',     date: daysFromNow(8) },
+    { id:4, name:'Manzanas',         cat:'frutas',   qty:'1 kg',      date: daysFromNow(4) },
+    { id:5, name:'Zanahorias',       cat:'frutas',   qty:'500 g',     date: daysFromNow(-1) },
+    { id:6, name:'Arroz blanco',     cat:'cereales', qty:'1 kg',      date: daysFromNow(180) },
+    { id:7, name:'Avena integral',   cat:'cereales', qty:'500 g',     date: daysFromNow(90) },
+    { id:8, name:'Pechuga de pollo', cat:'carnes',   qty:'600 g',     date: daysFromNow(1) },
+    { id:9, name:'Huevos',           cat:'otros',    qty:'12 piezas', date: daysFromNow(14) },
+    {id:10, name:'Mermelada fresa',  cat:'otros',    qty:'1 frasco',  date: daysFromNow(60) },
+    {id:11, name:'Atún en lata',     cat:'carnes',   qty:'3 latas',   date: daysFromNow(365) },
+    {id:12, name:'Mantequilla',      cat:'lacteos',  qty:'200 g',     date: daysFromNow(30) },
+  ];
+
+  let shopping = [
+    { id:1, name:'Aceite de oliva',   qty:'1 botella', priority:'alta',  checked:false },
+    { id:2, name:'Sal de mar',        qty:'500 g',     priority:'alta',  checked:false },
+    { id:3, name:'Cebolla',           qty:'2 kg',      priority:'media', checked:false },
+    { id:4, name:'Ajo',               qty:'1 cabeza',  priority:'media', checked:false },
+    { id:5, name:'Pasta espagueti',   qty:'2 paquetes',priority:'media', checked:true  },
+    { id:6, name:'Jugo de naranja',   qty:'1 litro',   priority:'baja',  checked:false },
+    { id:7, name:'Crema agria',       qty:'200 g',     priority:'baja',  checked:false },
+  ];
+
+  let nextPId = 13, nextSId = 8, filterCat = 'all';
+
+  function daysFromNow(d) {
+    const dt = new Date(today);
+    dt.setDate(dt.getDate() + d);
+    return dt.toISOString().split('T')[0];
+  }
+
+  function expiryStatus(dateStr) {
+    const exp = new Date(dateStr);
+    const diff = Math.round((exp - today) / 86400000);
+    if (diff < 0)  return { cls:'expired', label:'Caducado',       days: Math.abs(diff) + ' día(s) vencido' };
+    if (diff <= 3) return { cls:'soon',    label:'Vence pronto',   days: diff === 0 ? 'Hoy' : `En ${diff} día(s)` };
+    return               { cls:'ok',     label:'En buen estado',  days: `En ${diff} día(s)` };
+  }
+
+  function fmtDate(d) {
+    const [y,m,day] = d.split('-');
+    const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    return `${parseInt(day)} ${months[parseInt(m)-1]} ${y}`;
+  }
+
+  // ── RENDER ────────────────────────────────────────
+  function renderPantry() {
+    const list = document.getElementById('pantry-list');
+    const filtered = filterCat === 'all' ? pantry : pantry.filter(i => i.cat === filterCat);
+    if (!filtered.length) {
+      list.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-light)">No hay alimentos en esta categoría 🌸</div>';
+      return;
+    }
+    list.innerHTML = filtered.map(item => {
+      const st = expiryStatus(item.date);
+      return `
+      <div class="food-item" id="pi-${item.id}">
+        <div class="food-emoji">${emojis[item.cat]}</div>
+        <div class="food-info">
+          <div class="food-name">${item.name}</div>
+          <div class="food-category">${catNames[item.cat]} · ${item.qty}</div>
+        </div>
+        <div class="food-expiry">
+          <div class="expiry-date status-${st.cls}">${fmtDate(item.date)}</div>
+          <div class="expiry-label badge-${st.cls}">${st.days}</div>
+        </div>
+        <div class="food-actions">
+          <button class="btn-icon" title="Eliminar" onclick="deletePantry(${item.id})">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+    updateStats();
+  }
+
+  function renderShopping() {
+    const list = document.getElementById('shop-list');
+    list.innerHTML = shopping.map(item => `
+      <div class="shopping-item ${item.checked ? 'checked' : ''}" id="si-${item.id}">
+        <div class="custom-check ${item.checked ? 'checked' : ''}" onclick="toggleCheck(${item.id})"></div>
+        <div class="shop-info">
+          <div class="shop-name">${item.name}</div>
+          <div class="shop-qty">${item.qty}</div>
+        </div>
+        <span class="shop-priority priority-${item.priority}">
+          ${item.priority === 'alta' ? '🔴 Alta' : item.priority === 'media' ? '🟠 Media' : '🟣 Baja'}
+        </span>
+        <button class="btn-icon" title="Eliminar" onclick="deleteShop(${item.id})">🗑️</button>
+      </div>
+    `).join('');
+    updateStats();
+  }
+
+  function updateStats() {
+    document.getElementById('totalItems').textContent = pantry.length;
+    const expired = pantry.filter(i => expiryStatus(i.date).cls === 'expired').length;
+    const soon    = pantry.filter(i => expiryStatus(i.date).cls === 'soon').length;
+    document.getElementById('expiredItems').textContent = expired;
+    document.getElementById('expiringItems').textContent = soon;
+    document.getElementById('shoppingCount').textContent = shopping.filter(i => !i.checked).length;
+  }
+
+  // ── ACTIONS ───────────────────────────────────────
+  function addPantryItem() {
+    const name = document.getElementById('p-name').value.trim();
+    const date = document.getElementById('p-date').value;
+    if (!name || !date) { notify('⚠️ Completa nombre y fecha'); return; }
+    pantry.push({ id: nextPId++, name, cat: document.getElementById('p-cat').value, qty: document.getElementById('p-qty').value || '1 pieza', date });
+    renderPantry();
+    toggleForm('pantry-form');
+    document.getElementById('p-name').value = '';
+    document.getElementById('p-qty').value = '';
+    document.getElementById('p-date').value = '';
+    notify('🌸 Alimento agregado');
+  }
+
+  function addShopItem() {
+    const name = document.getElementById('s-name').value.trim();
+    if (!name) { notify('⚠️ Ingresa un producto'); return; }
+    shopping.push({ id: nextSId++, name, qty: document.getElementById('s-qty').value || '1', priority: document.getElementById('s-prio').value, checked: false });
+    renderShopping();
+    toggleForm('shop-form');
+    document.getElementById('s-name').value = '';
+    document.getElementById('s-qty').value = '';
+    notify('🛒 Producto agregado a la lista');
+  }
+
+  function deletePantry(id) {
+    pantry = pantry.filter(i => i.id !== id);
+    renderPantry();
+    notify('🗑️ Alimento eliminado');
+  }
+
+  function deleteShop(id) {
+    shopping = shopping.filter(i => i.id !== id);
+    renderShopping();
+    notify('🗑️ Producto eliminado');
+  }
+
+  function toggleCheck(id) {
+    const item = shopping.find(i => i.id === id);
+    if (item) item.checked = !item.checked;
+    renderShopping();
+    if (shopping.find(i => i.id === id)?.checked) notify('✅ ¡Producto comprado!');
+  }
+
+  function clearChecked() {
+    shopping = shopping.filter(i => !i.checked);
+    renderShopping();
+    notify('🧹 Lista limpiada');
+  }
+
+  function filterPantry(btn, cat) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterCat = cat;
+    renderPantry();
+  }
+
+  function toggleForm(id) {
+    const f = document.getElementById(id);
+    f.classList.toggle('open');
+  }
+
+  let notifTimer;
+  function notify(msg) {
+    const n = document.getElementById('notif');
+    document.getElementById('notif-text').textContent = msg;
+    n.classList.add('show');
+    clearTimeout(notifTimer);
+    notifTimer = setTimeout(() => n.classList.remove('show'), 2400);
+  }
+
+  // ── INIT ──────────────────────────────────────────
+  document.getElementById('todayDate').textContent = today.toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  // Capitalize first letter
+  const d = document.getElementById('todayDate');
+  d.textContent = d.textContent.charAt(0).toUpperCase() + d.textContent.slice(1);
+
+  renderPantry();
+  renderShopping();
+</script>
+</body>
+</html>
